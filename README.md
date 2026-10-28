@@ -16,6 +16,14 @@ A ceiling fan runs on mains voltage. Read [docs/safety.md](docs/safety.md) befor
 anything: the ESP32 is prototyped at low voltage first, and any mains part uses certified,
 isolated hardware, installed or checked by a qualified electrician.
 
+## Pre-push gate
+
+This repository is public. Run `scripts/install-hooks.sh` once per clone: the `pre-push`
+hook scans the commits being pushed (gitleaks + `.gitleaks.toml`: secrets, private IPs,
+hostnames, home paths, personal e-mails, literal Wi-Fi credentials) and refuses the push on
+any finding. `scripts/test-secret-gate.sh` proves it (also run in CI). Real network values
+go in the gitignored `esphome/secrets.yaml` (copy `esphome/secrets.yaml.example`), never in docs.
+
 ## Goals
 
 - Switch the fan (off + speeds) and the light remotely, standalone through the ESPHome

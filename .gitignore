@@ -1,5 +1,10 @@
 # ESPHome
 esphome/secrets.yaml
+
+# Local environment files (real values stay off the public repo)
+.env
+.env.*
+!.env.example
 .esphome/
 *.bin
 build/
