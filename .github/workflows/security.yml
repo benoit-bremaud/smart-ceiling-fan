@@ -48,5 +48,8 @@ jobs:
           mkdir -p "$HOME/bin" && tar -xzf /tmp/gitleaks.tgz -C "$HOME/bin" gitleaks
           echo "$HOME/bin" >> "$GITHUB_PATH"
 
+      - name: Install the hooks
+        run: scripts/install-hooks.sh
+
       - name: Run the canary test
         run: scripts/test-secret-gate.sh

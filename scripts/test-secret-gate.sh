@@ -13,6 +13,14 @@ zero=0000000000000000000000000000000000000000
 # Ignore the developer's git config (commit signing, a global core.hooksPath...).
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 
+# This checkout must run its own hooks (a worktree-level core.hooksPath once shadowed them).
+hooks_dir=$(cd "$here" && realpath -m "$(git rev-parse --git-path hooks)")
+if [ "$hooks_dir" = "$here/scripts/hooks" ]; then
+  echo "ok   hooks-path (scripts/hooks)"
+else
+  echo "FAIL hooks-path: git runs $hooks_dir, run scripts/install-hooks.sh"; fail=1
+fi
+
 rand() { LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c "$1" || true; }
 
 new_repo() { # dir: fresh repo with one base commit holding the config; sets $base
@@ -53,6 +61,10 @@ check private-ip-192 private-ipv4 a.md "module at 192.168"".1.50"
 check private-ip-10 private-ipv4 a.md "gateway 10.""0.0.1"
 check private-ip-172 private-ipv4 a.md "host 172.""16.4.9"
 check cgnat-ip private-ipv4 a.md "tailnet 100.""101.2.3"
+check ipv6-ula private-ipv6 a.md "node fd12"":3456:789a::1"
+check ipv6-link-local private-ipv6 a.md "iface fe80""::1ff:fe23:4567"
+check ipv6-link-local-upper private-ipv6 a.md "iface FE80""::1"
+check ipv6-near-miss pass a.md "doc 2001:db8::1, site fec0::1, word fd12 and ff02::1"
 check homelab-host homelab-host a.md "ssh me@bb-""homelab"
 check tailnet-name homelab-host a.md "host pi.tail1234.ts"".net"
 check home-path home-directory-path a.md "/home/""someone/project/file"
@@ -77,6 +89,10 @@ check wifi-flow-quoted-key wifi-literal-credential esphome/a.yaml "wifi: {'passw
 check yaml-nested-key pass esphome/a.yaml $'key:\n  nested: value'
 check yaml-nested-flow pass esphome/a.yaml 'key: {nested: value}'
 check wifi-block-scalar wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: |-\n    MyHome'
+check wifi-anchor wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: &wifi MyHome'
+check wifi-anchor-quoted wifi-literal-credential esphome/a.yaml $'wifi:\n  password: &pw "hunter22"'
+check wifi-alias pass esphome/a.yaml $'wifi:\n  ssid: *wifi'
+check wifi-anchor-secret pass esphome/a.yaml $'wifi:\n  ssid: &w !secret wifi_ssid'
 check wifi-comment pass esphome/a.yaml $'wifi:\n  ssid: # set below'
 check wifi-secret pass esphome/a.yaml $'wifi:\n  ssid: !secret wifi_ssid'
 check wifi-example pass esphome/secrets.yaml.example $'wifi_ssid: "MyHome"'
@@ -90,9 +106,11 @@ new_repo "$tmp/newbranch" && commit_file a.md "ip 192.168"".9.9"
 expect new-branch private-ipv4 "$zero"
 
 # A remote tip unknown locally (not fetched) must not shrink the scan to nothing.
+new_repo "$tmp/unknown" && commit_file a.md "ip 192.168"".9.9"
 expect unknown-remote-sha private-ipv4 "$(printf 'dead%.0s' {1..10})"
 
 # A deletion line is skipped, and does not hide the ref lines after it.
+new_repo "$tmp/deletion" && commit_file a.md "ip 192.168"".9.9"
 out=$(printf 'refs/heads/d %s refs/heads/d %s\nrefs/heads/x %s refs/heads/x %s\n' \
   "$zero" "$base" "$head" "$base" | "$hook" 2>&1 >/dev/null) && got=pass || got=block
 if [ "$got" = block ] && grep -q "RuleID: *private-ipv4" <<<"$out"; then
