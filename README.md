@@ -22,7 +22,7 @@ This repository is public. Run `scripts/install-hooks.sh` once per clone: the `p
 hook scans the commits being pushed (gitleaks + `.gitleaks.toml`: secrets, private IPs,
 hostnames, home paths, personal e-mails, literal Wi-Fi credentials) and refuses the push on
 any finding. `scripts/test-secret-gate.sh` proves it (also run in CI). Real network values
-go in a gitignored `.env`-style file, never in docs.
+go in the gitignored `esphome/secrets.yaml` (copy `secrets.yaml.example`), never in docs.
 
 ## Goals
 
