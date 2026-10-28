@@ -33,8 +33,8 @@ keywords = ["home/", "users/"]
 [[rules]]
 id = "personal-email"
 description = "Personal e-mail address in a public repository"
-regex = '''(?i)[a-z0-9._%+-]+@(?:gmail|googlemail|outlook|hotmail|yahoo|icloud|proton|protonmail|pm|vev)\.(?:com|me|fr|ch)\b'''
-keywords = ["@gmail", "@googlemail", "@outlook", "@hotmail", "@yahoo", "@icloud", "@proton", "@pm", "@vev"]
+regex = '''(?i)[a-z0-9._%+-]+@(?:gmail|googlemail|outlook|hotmail|yahoo|icloud|proton|protonmail|pm|vev|free|orange|wanadoo|laposte|sfr|live|msn|aol|gmx)\.(?:com|me|fr|ch|net|co\.uk)\b'''
+keywords = ["@gmail", "@googlemail", "@outlook", "@hotmail", "@yahoo", "@icloud", "@proton", "@pm", "@vev", "@free", "@orange", "@wanadoo", "@laposte", "@sfr", "@live", "@msn", "@aol", "@gmx"]
 
 [[rules]]
 id = "mac-address"

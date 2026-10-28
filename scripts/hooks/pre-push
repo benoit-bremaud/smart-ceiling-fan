@@ -5,7 +5,8 @@
 set -euo pipefail
 
 zero=0000000000000000000000000000000000000000
-remote=${1:-origin} # git passes the remote name as $1
+remote=${1:-origin} # git passes the remote name as $1 (a URL when pushing to one: then every
+# commit counts as new, so the scan covers the whole history; slower, still fail closed)
 root=$(git rev-parse --show-toplevel)
 config="$root/.gitleaks.toml"
 

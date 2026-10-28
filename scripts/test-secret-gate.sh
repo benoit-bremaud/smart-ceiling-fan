@@ -61,6 +61,8 @@ check macos-path home-directory-path a.md "/Users/""bob/project/file"
 check github-users-url pass a.md "https://github.com/users/""someone/projects/1"
 check personal-email personal-email a.md "contact: someone@gm""ail.com"
 check personal-email-upper personal-email a.md "contact: someone@GM""AIL.com"
+check personal-email-fr personal-email a.md "contact: someone@ora""nge.fr"
+check personal-email-net personal-email a.md "contact: someone@laposte"".net"
 check mac-address mac-address a.txt "sta aa:bb:cc:""11:22:33"
 check wifi-literal wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: "MyHome"'
 check wifi-password wifi-literal-credential esphome/a.yaml $'wifi:\n  password: "hunter22"'
