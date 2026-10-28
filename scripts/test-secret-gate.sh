@@ -4,7 +4,7 @@
 # values are built from fragments so this file never contains a literal the scanner flags.
 set -uo pipefail
 
-here=$(cd "$(dirname "$0")/.." && pwd)
+here=$(cd "$(dirname "$0")/.." && pwd -P)
 hook="$here/scripts/hooks/pre-push"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
@@ -13,7 +13,7 @@ zero=0000000000000000000000000000000000000000
 # Ignore the developer's git config (commit signing, a global core.hooksPath...).
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 
-# This checkout must run its own hooks (a worktree-level core.hooksPath once shadowed them).
+# Developer setup, not the gate itself: this checkout must run its own hooks (a worktree-level core.hooksPath once shadowed them).
 hooks_dir=$(cd "$here" && realpath -m "$(git rev-parse --git-path hooks)")
 if [ "$hooks_dir" = "$here/scripts/hooks" ]; then
   echo "ok   hooks-path (scripts/hooks)"
@@ -65,6 +65,8 @@ check ipv6-ula private-ipv6 a.md "node fd12"":3456:789a::1"
 check ipv6-link-local private-ipv6 a.md "iface fe80""::1ff:fe23:4567"
 check ipv6-link-local-upper private-ipv6 a.md "iface FE80""::1"
 check ipv6-near-miss pass a.md "doc 2001:db8::1, site fec0::1, word fd12 and ff02::1"
+check ipv6-time-near-miss pass a.md "at feb1:12:30:45 and deadfd12:ab:cd"
+check ipv6-full private-ipv6 a.md "iface fe80"":1:2:3:4:5:6:7"
 check homelab-host homelab-host a.md "ssh me@bb-""homelab"
 check tailnet-name homelab-host a.md "host pi.tail1234.ts"".net"
 check home-path home-directory-path a.md "/home/""someone/project/file"
@@ -91,6 +93,8 @@ check yaml-nested-flow pass esphome/a.yaml 'key: {nested: value}'
 check wifi-block-scalar wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: |-\n    MyHome'
 check wifi-anchor wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: &wifi MyHome'
 check wifi-anchor-quoted wifi-literal-credential esphome/a.yaml $'wifi:\n  password: &pw "hunter22"'
+check wifi-anchor-block wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: &a |\n    MyHome'
+check wifi-anchor-next-line pass esphome/a.yaml $'wifi:\n  ssid: &a\n    MyHome'
 check wifi-alias pass esphome/a.yaml $'wifi:\n  ssid: *wifi'
 check wifi-anchor-secret pass esphome/a.yaml $'wifi:\n  ssid: &w !secret wifi_ssid'
 check wifi-comment pass esphome/a.yaml $'wifi:\n  ssid: # set below'

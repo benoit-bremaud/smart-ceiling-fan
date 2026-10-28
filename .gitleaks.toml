@@ -8,7 +8,7 @@ useDefault = true
 # exemption: it builds its fake values from fragments.
 [[allowlists]]
 description = "The rule definitions name the patterns they look for."
-targetRules = ["private-ipv4", "private-ipv6","homelab-host", "home-directory-path", "personal-email", "mac-address", "wifi-literal-credential"]
+targetRules = ["private-ipv4", "private-ipv6", "homelab-host", "home-directory-path", "personal-email", "mac-address", "wifi-literal-credential"]
 paths = ['''\.gitleaks\.toml$''']
 
 [[rules]]
@@ -20,7 +20,8 @@ keywords = ["10.", "192.168.", "172.", "100.", "169.254."]
 [[rules]]
 id = "private-ipv6"
 description = "IPv6 unique local (fd00::/8) or link-local (fe80::/10) address: use a <PLACEHOLDER>"
-regex = '''(?i)\b(?:fd[0-9a-f]{2}|fe[89ab][0-9a-f]):[0-9a-f]{0,4}:[0-9a-f:]*'''
+# A "::" or four more groups: a time after a month (feb1:12:30:45) is not an address.
+regex = '''(?i)\b(?:fd[0-9a-f]{2}|fe[89ab][0-9a-f])(?:(?::[0-9a-f]{1,4})*::|(?::[0-9a-f]{1,4}){4})[0-9a-f:]*'''
 keywords = ["fd", "fe8", "fe9", "fea", "feb"]
 
 [[rules]]
