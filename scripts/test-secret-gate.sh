@@ -68,6 +68,7 @@ check wifi-literal wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: "MyHo
 check wifi-password wifi-literal-credential esphome/a.yaml $'wifi:\n  password: "hunter22"'
 check wifi-quoted-hash wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: "#MyHome"'
 check wifi-quoted-bang wifi-literal-credential esphome/a.yaml $'wifi:\n  password: \'!hunter22\''
+check wifi-list-item wifi-literal-credential esphome/a.yaml $'wifi:\n  networks:\n    - ssid: "MyHome"'
 check wifi-comment pass esphome/a.yaml $'wifi:\n  ssid: # set below'
 check wifi-secret pass esphome/a.yaml $'wifi:\n  ssid: !secret wifi_ssid'
 check wifi-example pass esphome/secrets.yaml.example $'wifi_ssid: "MyHome"'

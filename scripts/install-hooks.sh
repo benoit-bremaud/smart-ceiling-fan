@@ -6,5 +6,8 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 git config core.hooksPath scripts/hooks
-git config --worktree --unset core.hooksPath 2>/dev/null || true
+# Without extensions.worktreeConfig, --worktree means --local and would undo the line above.
+if [ "$(git config --bool extensions.worktreeConfig || true)" = true ]; then
+  git config --worktree --unset core.hooksPath || true
+fi
 echo "core.hooksPath = $(git config core.hooksPath)"
