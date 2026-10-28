@@ -1,36 +1,37 @@
-# Local review — smart-ceiling-fan (issue #9, pre-push gate port)
+# Local review — smart-ceiling-fan (branch chore/11-gate-followups)
+
+One-pass local gate for issue #11 (pre-push gate follow-ups).
 
 - Date: 2026-10-28
-- Commit: see branch `chore/9-secret-gate` head
-- Scope: branch diff origin/main...HEAD
-- Checks run: security · correctness · tests · docs (one Opus reviewer; shell/config-only diff, design and container audits not applicable: `dependabot.yml` covers github-actions only)
-- Verdict: ship after fixes  ·  Must 0 open (1 fixed) · Should 0 open (3 fixed) · Nice 3 (follow-up issue)
+- Commit: 74c09a0
+- Scope: branch diff main...HEAD (.gitleaks.toml, scripts/test-secret-gate.sh, .github/workflows/security.yml)
+- Checks run: design · docs · tests · security · correctness (one Opus reviewer, proportional to a 3-file tooling diff)
+- Verdict: ship as-is · Must 0 · Should 0 open (3 fixed in 74c09a0) · Nice 2
 
-## Pre-merge gate
+## Pre-merge gate (head SHA 74c09a0)
 | Step | Result |
 |---|---|
-| 1 Tests | ✅ `scripts/test-secret-gate.sh` 28/28 ok (gitleaks 8.30.1) |
-| 2 Coverage | n/a: no application code yet; the canary covers every rule and every hook branch |
-| 3 SonarQube | ⚠️ not run: no SonarQube project for this repo yet |
-| 4 Secrets | ✅ `gitleaks git` origin/main..HEAD and `gitleaks dir` clean · no tracked .env · diff read: nothing sensitive |
-| 5 QA pass | ✅ smoke (tooling diff): the hook is the product, exercised end to end by the canary |
-- Gate: GREEN except SonarQube (⚠️, owner waiver needed)
+| 1 Tests | ✅ canary 53/53 (`scripts/test-secret-gate.sh`), shellcheck and actionlint clean |
+| 2 Coverage | n/a — no runtime code; every rule has blocking and near-miss canary cases |
+| 3 SonarQube | ⚠️ not run — no Sonar project yet, waived by the owner, tracked in #12 |
+| 4 Secrets | ✅ gitleaks git `--all` and `dir` clean · no tracked .env · diff read: only fragmented fake values |
+| 5 QA pass | ✅ smoke (tooling diff): canary run green; hooks-path check proven to fail with a wrong `core.hooksPath` and to recover after `install-hooks.sh` |
+- Gate: **GREEN for push** (SonarQube waived, #12)
 
 ## 🔴 Must Have
-- `scripts/install-hooks.sh` `[security]` · a worktree-level `core.hooksPath` (absolute, pointing at the main checkout's old hook) shadowed the relative one, so pushes from the worktree ran the fail-open hook · fixed: the script now unsets the worktree-level override.
-
-## 🟡 Should Have
-- `.gitleaks.toml` `[security]` · personal e-mail rule missed `.net`, `.co.uk` and French ISPs · fixed, two canary cases added.
-- `.github/workflows/security.yml` `[security]` · action pin comment `# v2` → `# v2.3.9` · fixed.
-- `scripts/hooks/pre-push` `[correctness]` · push to a URL scans the whole history · documented in the hook (still fail closed).
-
-## 🔵 Nice to Have
-- `.gitleaks.toml` · IPv6 ULA / link-local rule.
-- `scripts/test-secret-gate.sh` · assert the installed `core.hooksPath` resolves to this checkout's hooks.
-- `scripts/test-secret-gate.sh` · `unknown-remote-sha` / deletion cases reuse the previous repo's state.
-
-## ⚪ Disagree / Intentional
 _None._
 
+## 🟡 Should Have
+- `.gitleaks.toml:24` `[security]` · `feb1:12:30` (a time after a month) matched `private-ipv6` · fixed: require `::` or four more groups, canary `ipv6-time-near-miss`
+- `scripts/test-secret-gate.sh:7` `[correctness]` · `pwd` vs `realpath` gave a false hooks-path FAIL through a symlinked path · fixed: `pwd -P`
+- `scripts/test-secret-gate.sh` `[tests]` · edges not pinned · fixed: `ipv6-full`, `\b` guard, `wifi-anchor-block`, `wifi-anchor-next-line`
+
+## 🔵 Nice to Have
+- `.gitleaks.toml:25` `[design]` · keyword `fd` is a broad prefilter · kept: keywords only prefilter, the regex decides
+- `.gitleaks.toml` `[docs]` · `&\S+` also accepts odd anchor names · harmless, kept
+
+## ⚪ Disagree / Intentional
+- `.gitleaks.toml` `[security]` · regex kept over a YAML-aware check · owner MCDA decision 2026-10-28 (A 400 / B 335 / C 285); `? key` and next-line values documented as not covered
+
 ## Per-dimension summary
-- Security: fail-open fixed, override fixed · Correctness: sound, all variables quoted · Tests: canary asserts RuleID per case · Docs: README and CLAUDE.md accurate.
+- Design: proportional, one tool. · Docs: comments match behaviour. · Tests: 53 isolated cases. · Security: no false negative found. · Correctness: symlink edge fixed.
