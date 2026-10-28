@@ -45,8 +45,10 @@ keywords = [":"]
 [[rules]]
 id = "wifi-literal-credential"
 description = "Literal Wi-Fi ssid/password/psk or API key in YAML: use !secret"
-# A quoted value is literal whatever its first character; unquoted, ! (tag) and # (comment) are not.
-regex = '''(?im)(?:^\s*(?:-\s+)?|[{,]\s*)(?:ssid|password|psk|key)\s*:\s*(?:"[^"\n]+"|'[^'\n]+'|[^\s!"'#$][^\s#]*)'''
+# Key: block, list item or flow mapping, bare or quoted. Value on the same line only: a
+# quoted one is literal whatever its first character; unquoted, a tag (!), comment (#),
+# nested collection ({ [), block scalar (| >), anchor (&) or alias (*) is not.
+regex = '''(?im)(?:^[ \t]*(?:-[ \t]+)?|[{,][ \t]*)["']?(?:ssid|password|psk|key)["']?[ \t]*:[ \t]*(?:"[^"\n]+"|'[^'\n]+'|[^\s!"'#${\[|>&*][^\s#]*)'''
 keywords = ["ssid", "password", "psk", "key"]
 path = '''\.ya?ml$'''
 [[rules.allowlists]]
