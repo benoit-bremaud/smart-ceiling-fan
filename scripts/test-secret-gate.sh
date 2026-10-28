@@ -76,6 +76,7 @@ check wifi-quoted-key wifi-literal-credential esphome/a.yaml $'wifi:\n  "ssid": 
 check wifi-flow-quoted-key wifi-literal-credential esphome/a.yaml "wifi: {'password': hunter22}"
 check yaml-nested-key pass esphome/a.yaml $'key:\n  nested: value'
 check yaml-nested-flow pass esphome/a.yaml 'key: {nested: value}'
+check wifi-block-scalar wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: |-\n    MyHome'
 check wifi-comment pass esphome/a.yaml $'wifi:\n  ssid: # set below'
 check wifi-secret pass esphome/a.yaml $'wifi:\n  ssid: !secret wifi_ssid'
 check wifi-example pass esphome/secrets.yaml.example $'wifi_ssid: "MyHome"'
