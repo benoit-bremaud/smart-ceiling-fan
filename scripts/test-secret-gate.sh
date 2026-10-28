@@ -14,11 +14,11 @@ zero=0000000000000000000000000000000000000000
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 
 # Developer setup, not the gate itself: this checkout must run its own hooks (a worktree-level core.hooksPath once shadowed them).
-hooks_dir=$(cd "$here" && realpath -m "$(git rev-parse --git-path hooks)")
+hooks_dir=$(cd "$here" && cd "$(git rev-parse --git-path hooks)" 2>/dev/null && pwd -P)
 if [ "$hooks_dir" = "$here/scripts/hooks" ]; then
   echo "ok   hooks-path (scripts/hooks)"
 else
-  echo "FAIL hooks-path: git runs $hooks_dir, run scripts/install-hooks.sh"; fail=1
+  echo "FAIL hooks-path: git does not run scripts/hooks, run scripts/install-hooks.sh"; fail=1
 fi
 
 rand() { LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c "$1" || true; }
