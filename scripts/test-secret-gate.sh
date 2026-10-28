@@ -66,6 +66,9 @@ check personal-email-net personal-email a.md "contact: someone@laposte"".net"
 check mac-address mac-address a.txt "sta aa:bb:cc:""11:22:33"
 check wifi-literal wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: "MyHome"'
 check wifi-password wifi-literal-credential esphome/a.yaml $'wifi:\n  password: "hunter22"'
+check wifi-quoted-hash wifi-literal-credential esphome/a.yaml $'wifi:\n  ssid: "#MyHome"'
+check wifi-quoted-bang wifi-literal-credential esphome/a.yaml $'wifi:\n  password: \'!hunter22\''
+check wifi-comment pass esphome/a.yaml $'wifi:\n  ssid: # set below'
 check wifi-secret pass esphome/a.yaml $'wifi:\n  ssid: !secret wifi_ssid'
 check wifi-example pass esphome/secrets.yaml.example $'wifi_ssid: "MyHome"'
 
