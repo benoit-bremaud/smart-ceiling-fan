@@ -5,6 +5,24 @@ and findings that the commit history alone does not capture. Newest entries on t
 
 ---
 
+## 2026-10-28 — Pre-push gate follow-ups (#11, PR #14, squash ebb2685)
+
+**Context.** Nice-to-haves from the #10 review plus the YAML variants deferred by the owner.
+
+**What changed.**
+
+- New `private-ipv6` rule: IPv6 unique local and link-local ranges. An address
+  needs `::` or four more groups, so a time after a month (`feb1:12:30:45`) passes.
+- `wifi-literal-credential` catches a literal after a YAML anchor (`ssid: &wifi MyHome`);
+  aliases and `&a !secret x` stay exempt. `? key` mappings and next-line values are
+  documented as not covered.
+- The canary checks that `core.hooksPath` resolves to this checkout's `scripts/hooks`
+  (portable `cd` + `pwd -P`, after Codex flagged GNU-only `realpath -m`); CI runs
+  `install-hooks.sh` first. Two cases now build their own repository. 53 cases.
+
+**Decisions.** Regex kept over a YAML-aware check (owner MCDA: regex 400, YAML parser 335,
+hybrid 285): one pinned tool, fail closed, no Python in the hook. SonarQube still waived (#12).
+
 ## 2026-10-28 — Pre-push secret and personal-data gate (#9, PR #10, squash cfc2031)
 
 **Context.** Public repository: secrets and personal/network data must be refused before
